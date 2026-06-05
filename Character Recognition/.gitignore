@@ -1,0 +1,54 @@
+# Environment
+.env
+.venv
+env/
+venv/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Data and Models
+*.keras
+models/*.keras
+!models/best_model.keras
+!models/best_model\ \(2\).keras
+!models/best_model\ \(4\).keras
+Dataset/
+data/
+*.csv
+
+# Logs
+*.log
+
+# Jupyter
+.ipynb_checkpoints/

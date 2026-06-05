@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  dyslexialens-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dyslexialens-backend
+    ports:
+      - "7860:7860"
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./models:/app/models
+      - ./logs:/app/logs
+    env_file:
+      - .env
+    networks:
+      - dyslexialens-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7860/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  dyslexialens-network:
+    driver: bridge

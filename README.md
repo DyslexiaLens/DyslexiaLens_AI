@@ -1,65 +1,238 @@
+# DyslexiaLens AI — Sistem Deteksi Disleksia Berbasis Deep Learning
 
-# DyslexiaLens — Pipeline Inferensi AI & Infrastruktur Backend Produksi
+**Capstone Project - Dicoding Generasi Bangkit 2024**
 
-Berkas ini adalah dokumentasi teknis utama untuk infrastruktur backend proyek **DyslexiaLens** (Dicoding Capstone CC26-PSU052). Repositori ini mengisolasi seluruh logika mesin kecerdasan buatan, pemrosesan gambar, dan perutean API ke dalam arsitektur siap produksi berbasis Docker.
+Sistem AI comprehensive untuk mendeteksi dan menganalisis disleksia melalui analisis tulisan tangan dengan arsitektur multi-modal yang didukung oleh tiga divisi pengembangan (AI Engineer, Data Scientist, Backend Engineer).
 
+---
 
-## Ringkasan Fitur Utama Sistem AI
-Aplikasi backend ini melayani tiga fungsi klinis utama yang bekerja secara independen melalui arsitektur terpisah (*Decoupled Architecture*):
+## 📊 Project Overview
 
-1. **Deteksi Disleksia Multi-Modal (Model A):** Menggunakan arsitektur *Late Fusion CNN* (Keras Functional API) yang menerima input ganda berupa potongan gambar huruf dan 6 fitur geometri mekanis tulisan tangan. Model ini mengeksekusi *Multi-Task Learning* untuk mengeluarkan status klasifikasi biner sekaligus estimasi tingkat keparahan (*Severity Score*).
-2. **Ekstraksi Grid & Lembar Kerja OCR (Model B):** Menggunakan kombinasi pemrosesan citra tradisional (OpenCV) untuk mendeteksi koordinat lembar kerja fisik, memotong sel karakter secara otomatis, dan menerjemahkannya menjadi teks (A-Z) menggunakan model *Optical Character Recognition* (OCR).
-3. **Sintesis Kalimat Latihan Klinis (Generative AI):** Mengintegrasikan Gemini 1.5 Flash untuk menciptakan kalimat tes secara dinamis. Dilengkapi dengan *validation loop* internal berbasis Python untuk memastikan teks mematuhi batas tata letak kertas yang ketat (tepat 5 kata, maksimal 8 karakter per kata).
-
-
-## Struktur Berkas Proyek
-
-```text
-.
-├── app/
-│   ├── api/
-│   │   └── v1/
-│   │       ├── endpoints/      # Handler API (ai.py, dyslexia.py, ocr.py)
-│   │       └── router.py       # Gerbang perutean utama API v1
-│   ├── core/                   # Utilitas keamanan dan pembacaan konfigurasi
-│   ├── schemas/                # Skema validasi data input/output (Pydantic)
-│   ├── services/               # Logika inti inferensi model dan interaksi API Cloud
-│   └── utils/                  # Skrip pembantu pemrosesan citra (OpenCV)
-├── models/
-│   ├── dyslexialens_model.keras # Bobot model pendeteksi utama (Multi-Task)
-│   └── ocr_model_v4.keras       # Bobot model pengenal abjad EMNIST
-├── Dockerfile                  # Konstruksi kontainer isolasi lingkungan sistem
-├── requirements.txt            # Daftar pustaka dan dependensi Python produksi
-├── .env.example                # Cetak biru variabel lingkungan (API Key)
-└── README.md                   # Dokumentasi teknis proyek
-
+```
+DyslexiaLens_AI/
+│
+├── 🤖 Character Recognition/          # AI Engineer - OCR & Char Detection
+│   ├── notebooks/                     # Training notebooks (EDA, modeling)
+│   ├── inference and fastAPI/         # FastAPI inference server
+│   ├── models/                        # Trained EMNIST models
+│   ├── requirements.txt
+│   ├── .env.example
+│   └── README.md                      # Setup & deployment guide
+│
+├── 📈 DyslexiaScreening/              # Data Scientist - Detection & Analysis
+│   ├── notebooks/                     # Prototyping & analysis
+│   ├── Inference & FastAPI/           # Inference engine
+│   ├── models/                        # Dyslexia classification models
+│   ├── requirements.txt
+│   ├── .env.example
+│   └── README.md                      # Feature engineering docs
+│
+└── 🏗️ HuggingFace DyslexiaLens/       # Backend Engineer - Production API
+    ├── app/                           # FastAPI application
+    │   ├── api/v1/                   # RESTful endpoints
+    │   ├── services/                 # Core ML inference logic
+    │   ├── schemas/                  # Pydantic models
+    │   ├── core/                     # Config & security
+    │   └── utils/                    # Image processing
+    ├── models/                        # Production models
+    ├── Dockerfile                     # Container definition
+    ├── docker-compose.yml             # Multi-service orchestration
+    ├── requirements.txt
+    ├── .env.example
+    └── README.md                      # Production deployment guide
 ```
 
 ---
 
-## Panduan Memulai & Pengembangan Lokal
+## 🎯 Sistem AI - 3 Pipeline Independen
 
-### 1. Pengaturan Variabel Lingkungan
+### 1️⃣ Character Recognition (OCR)
+**Divisi**: AI Engineer | **Status**: Training & Inference
+- **Input**: Gambar handwriting dari lembar kerja
+- **Output**: Teks terdeteksi (A-Z)
+- **Model**: CNN berbasis EMNIST dataset
+- **Tech**: TensorFlow, FastAPI
+- 📖 [Dokumentasi → Character Recognition/README.md](Character%20Recognition/README.md)
 
-Salin berkas `.env.example` menjadi `.env` dan masukkan token rahasia Google AI Studio Anda:
+### 2️⃣ Dyslexia Detection (Multi-Modal Classification)
+**Divisi**: Data Scientist | **Status**: Modeling & Evaluation
+- **Input**: Character image + 6 mechanical features (stroke density, symmetry, dll)
+- **Output**: Binary classification (Normal/Dyslexic) + Severity score
+- **Model**: Late Fusion CNN (Multi-Task Learning)
+- **Dataset**: Gambo EMNIST Balanced
+- 📖 [Dokumentasi → DyslexiaScreening/README.md](DyslexiaScreening/README.md)
+
+### 3️⃣ Production Backend (Multi-Service API)
+**Divisi**: Backend Engineer | **Status**: Production-ready
+- **Architecture**: Decoupled microservices
+- **Endpoints**: Dyslexia detection, OCR, Sentence generation (Gemini AI)
+- **Deployment**: Docker + docker-compose
+- **Features**: Authentication, health checks, structured logging
+- 📖 [Dokumentasi → HuggingFace DyslexiaLens/README.md](HuggingFace%20DyslexiaLens/README.md)
+
+---
+
+## 🚀 Quick Start
+
+### Option 1: Lokal Development (Per-divisi)
 
 ```bash
+# Character Recognition
+cd "Character Recognition"
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 cp .env.example .env
-# Buka file .env dan isi: GEMINI_API_KEY="Kunci_Rahasia_Gemini_Anda"
+# Run notebook atau FastAPI
 
+# DyslexiaScreening
+cd "../DyslexiaScreening"
+# Same setup...
+
+# HuggingFace DyslexiaLens
+cd "../HuggingFace DyslexiaLens"
+# Same setup...
 ```
 
-### 2. Eksekusi Menggunakan Docker (Rekomendasi Produksi)
-
-Untuk membangun lingkungan sistem yang terisolasi tanpa perlu menginstal TensorFlow secara lokal di komputer Anda:
+### Option 2: Production Deployment (Docker)
 
 ```bash
-# Membangun image kontainer
-docker build -t dyslexialens-backend .
+cd "HuggingFace DyslexiaLens"
+docker-compose up -d
 
-# Menjalankan kontainer pada port 8000
-docker run -d -p 8000:8000 --env-file .env dyslexialens-backend
-
+# API running at: http://localhost:7860
+# Docs at: http://localhost:7860/docs
 ```
 
-Setelah aktif, dokumentasi API interaktif dapat diakses langsung melalui peramban di tautan `http://localhost:8000/docs` (Swagger UI).
+---
+
+## 📦 Model Management
+
+### Akses Model dari Google Drive
+
+🔗 **[Model Storage - Google Drive](https://drive.google.com/drive/folders/1FHs447QrYQK6CAnXrz_rIa2Zcc6LnjWW?usp=sharing)**
+
+- **Akun Wajib**: capstone@student.devacademy.id
+- **Models**:
+  - `best_model.keras` - Character Recognition
+  - `dyslexialens_model.keras` - Dyslexia Detection
+  - `ocr_model_v4.keras` - OCR EMNIST
+
+Load model:
+```python
+from tensorflow import keras
+model = keras.models.load_model('models/dyslexialens_model.keras')
+```
+
+---
+
+## 🛠 Technology Stack
+
+| Layer | Technology |
+|-------|-----------|
+| **Framework** | FastAPI + Uvicorn |
+| **ML/DL** | TensorFlow 2.16.1, Keras |
+| **Vision** | OpenCV |
+| **LLM** | Google Gemini 1.5 Flash |
+| **Container** | Docker, Docker Compose |
+| **Data** | Pydantic, Pandas |
+| **Notebooks** | Jupyter, Kaggle |
+
+---
+
+## 📋 Environment Configuration
+
+Setiap divisi memiliki `.env.example`. Copy ke `.env` dan konfigurasi:
+
+**HuggingFace DyslexiaLens** (yang paling penting):
+```bash
+GEMINI_API_KEY=your_google_ai_studio_key
+DYSLEXIA_MODEL_PATH=./models/dyslexialens_model.keras
+OCR_MODEL_PATH=./models/ocr_model_v4.keras
+```
+
+⚠️ **Security**: Never commit `.env` dengan credentials aktif!
+
+---
+
+## 📞 Development Teams
+
+| Divisi | Peran | Repo |
+|--------|-------|------|
+| 🤖 **AI Engineer** | OCR Development | `Character Recognition/` |
+| 📊 **Data Scientist** | Model Training & Feature Engineering | `DyslexiaScreening/` |
+| 🏗️ **Backend Engineer** | Production API & Infrastructure | `HuggingFace DyslexiaLens/` |
+
+---
+
+## 🔍 Repository Structure Details
+
+### ✅ Checklist Per Divisi
+
+#### Character Recognition (AI Engineer)
+- [x] Jupyter notebooks (training, EDA)
+- [x] Source code (inference, FastAPI)
+- [x] Pre-trained models (.keras)
+- [x] requirements.txt
+- [x] .env.example (NO credentials)
+- [x] .gitignore
+- [x] README dengan link Google Drive model
+
+#### DyslexiaScreening (Data Scientist)
+- [x] Jupyter notebooks (prototyping, analysis)
+- [x] Source code (feature extraction, inference)
+- [x] Pre-trained models (.keras)
+- [x] requirements.txt
+- [x] .env.example (NO credentials)
+- [x] .gitignore
+- [x] README
+
+#### HuggingFace DyslexiaLens (Backend Engineer)
+- [x] FastAPI application (structured)
+- [x] requirements.txt (production)
+- [x] .env.example (NO credentials - FIXED!)
+- [x] .gitignore (complete)
+- [x] Dockerfile (optimized)
+- [x] docker-compose.yml (multi-service)
+- [x] Comprehensive README
+
+---
+
+## 🎓 How to Use This Repository
+
+1. **For Training**: Buka notebook di divisi masing-masing
+2. **For Inference**: Run FastAPI server di divisi masing-masing
+3. **For Production**: Deploy dengan docker-compose di `HuggingFace DyslexiaLens/`
+4. **For Integration**: Call API endpoints dari frontend
+
+---
+
+## 📝 Documentation
+
+Setiap direktori divisi memiliki **README lengkap** dengan:
+- Deskripsi project
+- Setup environment
+- Cara menjalankan
+- Technology stack
+- Notes & troubleshooting
+
+---
+
+## ⚠️ Important Notes
+
+1. **Model Files**: Disimpan di Google Drive (gitignore)
+2. **API Keys**: Gunakan `.env` untuk credentials (never commit!)
+3. **Development**: Setiap divisi bisa develop independently
+4. **Production**: Deploy melalui `HuggingFace DyslexiaLens/` dengan docker
+5. **Collaboration**: Gunakan API contracts (Pydantic schemas)
+
+---
+
+## 📞 Support
+
+Untuk issues atau questions:
+- Check README di divisi masing-masing
+- Review `.env.example` untuk konfigurasi
+- Verify requirements.txt dependencies
+
+**Last Updated**: 2026-06-05
