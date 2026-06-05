@@ -171,20 +171,11 @@ OCR_MODEL_PATH=./models/ocr_model_v4.keras
 #### Character Recognition (AI Engineer)
 - [x] Jupyter notebooks (training, EDA)
 - [x] Source code (inference, FastAPI)
-- [x] Pre-trained models (.keras)
+- [x] EMNIST-trained models (.keras)
 - [x] requirements.txt
 - [x] .env.example (NO credentials)
 - [x] .gitignore
 - [x] README dengan link Google Drive model
-
-#### DyslexiaScreening (Data Scientist)
-- [x] Jupyter notebooks (prototyping, analysis)
-- [x] Source code (feature extraction, inference)
-- [x] Pre-trained models (.keras)
-- [x] requirements.txt
-- [x] .env.example (NO credentials)
-- [x] .gitignore
-- [x] README
 
 #### HuggingFace DyslexiaLens (Backend Engineer)
 - [x] FastAPI application (structured)
@@ -202,7 +193,7 @@ OCR_MODEL_PATH=./models/ocr_model_v4.keras
 1. **For Training**: Buka notebook di divisi masing-masing
 2. **For Inference**: Run FastAPI server di divisi masing-masing
 3. **For Production**: Deploy dengan docker-compose di `HuggingFace DyslexiaLens/`
-4. **For Integration**: Call API endpoints dari frontend
+4. **For Integration**: Call API endpoints dari backend kemudian dipanggil lagi dari frontend
 
 ---
 
