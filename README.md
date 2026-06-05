@@ -114,7 +114,6 @@ docker-compose up -d
 
 - **Akun Wajib**: capstone@student.devacademy.id
 - **Models**:
-  - `best_model.keras` - Character Recognition
   - `dyslexialens_model.keras` - Dyslexia Detection
   - `ocr_model_v4.keras` - OCR EMNIST
 
